@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Floristería</title>
+    <link rel="icon" href="./fotos/maceta.png">
+    <!-- Bootstrap CSS -->
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+        .container {
+            margin-top: 50px;
+            background-color:rgb(115, 190, 223);
+        }
+        .flor-img {
+            max-width: 100%;
+            height: auto;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="row">
+            <div class="col-md-6 text-center">
+                <h1>Bienvenidos a la Floristería</h1>
+                <h3>Sky</h3>
+                <img src="fotos/best-flower.jpg" alt="Imagen de la Floristería" class="flor-img">
+                <div class="mt-4">
+                    <button id="add-flower-btn" class="btn btn-primary">Agregar Flor</button>
+                    <button id="show-most-expensive-btn" class="btn btn-success">Mostrar Flor Más Cara</button>
+                </div>
+            </div>
+            <div class="col-md-6 text-center">
+                <h2>Flores Agregadas</h2>
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Tipo</th>
+                            <th>Color</th>
+                            <th>Precio</th>
+                        </tr>
+                    </thead>
+                    <tbody id="flowers-table-body">
+                        <!-- Las flores se agregarán aquí -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="addFlowerModal" tabindex="-1" aria-labelledby="addFlowerModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="addFlowerModalLabel">Agregar Flor</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form id="flower-form">
+                        <div class="form-group">
+                            <label for="flower-type">Tipo de Flor</label>
+                            <input type="text" class="form-control" id="flower-type" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="flower-color">Color de la Flor</label>
+                            <input type="text" class="form-control" id="flower-color" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="flower-price">Precio de la Flor</label>
+                            <input type="number" class="form-control" id="flower-price" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Agregar</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script>
+
+        let flores = [];
+        
+        class Flor {
+            constructor(colorRecibido, tipoRecibido) {
+                this.color = colorRecibido;
+                this.tipo = tipoRecibido;
+            }
+
+            calcularPrecio(tipoFlor) {
+                switch (tipoFlor) {
+                    case "rosa":
+                        this.precio = 5;
+                        console.log("El precio de la rosa es: ", this.precio);
+                        break;
+                    case "tulipan":
+                        this.precio = 3;
+                        console.log("El precio del tulipán es: ", this.precio);
+                        break;
+                    default:
+                        this.precio = 0;
+                        console.log("Tipo de flor no reconocido. Precio establecido a: ", this.precio);
+                        break;
+                    }
+                }
+            }
+
+        // para usar el swicth
+        let florunica = new Flor("rojo", "rosa");
+
+        florunica.calcularPrecio(florunica.tipo);
+
+        console.log(florunica);
+
+
+        class Floristeria extends Flor {
+            constructor(color, tipo) {
+                super(color, tipo);
+            }
+
+            cambiarColor(nuevoColor) {
+                this.color = nuevoColor;
+            }
+
+            agregarFlor(tipo, color, precio) {
+                let id = flores.length + 1;
+
+                let objFlor = {
+                    id: id,
+                    tipo: tipo,
+                    color: color,
+                    precio: parseFloat(precio)
+                };
+
+                flores.push(objFlor);
+                this.actualizarTabla();
+            }
+
+            actualizarTabla() {
+                let tableBody = document.getElementById('flowers-table-body');
+                tableBody.innerHTML = '';
+                flores.forEach(flor => {
+                    let row = `<tr>
+                        <td>${flor.id}</td>
+                        <td>${flor.tipo}</td>
+                        <td>${flor.color}</td>
+                        <td>${flor.precio}</td>
+                    </tr>`;
+                    tableBody.innerHTML += row;
+                });
+            }
+
+            mostrarFlorMasCara() {
+                let mayorPrecio = 0;
+                let florMasCara = null;
+                for (let i = 0; i < flores.length; i++) {
+                    if (flores[i].precio > mayorPrecio) {
+                        mayorPrecio = flores[i].precio;
+                        florMasCara = flores[i];
+                    }
+                }
+                console.log("La flor más cara es: ", florMasCara);
+                alert(`La flor más cara es: ${florMasCara.tipo} de color ${florMasCara.color} con un precio de $${florMasCara.precio}`);
+            }
+        }
+
+        let objFloristeria = new Floristeria();
+
+        document.getElementById('add-flower-btn').addEventListener('click', () => {
+            $('#addFlowerModal').modal('show');
+        });
+
+        document.getElementById('flower-form').addEventListener('submit', (e) => {
+            e.preventDefault();
+            let tipo = document.getElementById('flower-type').value;
+            let color = document.getElementById('flower-color').value;
+            let precio = document.getElementById('flower-price').value;
+            objFloristeria.agregarFlor(tipo, color, precio);
+            $('#addFlowerModal').modal('hide');
+        });
+
+        document.getElementById('show-most-expensive-btn').addEventListener('click', () => {
+            objFloristeria.mostrarFlorMasCara();
+        });
+
+        objFloristeria.cambiarColor("rosa");
+        console.log(objFloristeria)
+
+        
+    </script>
+</body>
+</html>
